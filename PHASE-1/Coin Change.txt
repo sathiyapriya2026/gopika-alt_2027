@@ -1,0 +1,29 @@
+class Solution {
+
+    public static int findWays(int[] coins, int amount, int n,int[][] dp) {
+    if(amount == 0) return 0; // exact change
+    if(n == 0) return Integer.MAX_VALUE; // no coins left
+    if(dp[n][amount] != -1) return dp[n][amount];
+
+    if(coins[n-1] > amount) {
+        dp[n][amount] = findWays(coins, amount, n-1, dp);
+    } else {
+        int take = findWays(coins, amount - coins[n-1], n, dp);
+        int notTake = findWays(coins, amount, n-1, dp);
+
+        if(take != Integer.MAX_VALUE) take += 1; // increment only if valid
+        dp[n][amount] = Math.min(take, notTake);
+    }
+
+    return dp[n][amount];
+    }
+
+    public int coinChange(int[] coins, int amount) {
+        int[][] dp = new int[coins.length+1][amount+1];
+        for(int i=0;i<=coins.length;i++) {
+            Arrays.fill(dp[i],-1);
+        }
+        int result = findWays(coins,amount,coins.length,dp); 
+        return result == Integer.MAX_VALUE?-1:result;
+    }
+}
