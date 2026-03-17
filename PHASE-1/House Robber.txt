@@ -1,0 +1,28 @@
+class Solution {
+    public int rob(int[] nums) {
+        int len = nums.length;
+        int dp[] = new int [nums.length];
+        Arrays.fill(dp,-1);
+        return helper(len-1,nums,dp);
+    }
+
+    private static int helper(int idx,int [] nums,int []dp){
+        if(idx == 0) return nums[0];
+        if(idx == 1) return Math.max(nums[0],nums[1]);
+        
+        if(dp[idx-2] == -1){
+            dp[idx-2] = helper(idx-2,nums,dp) ;
+        }
+
+        if(dp[idx-1] == -1){
+            dp[idx-1] = helper(idx-1,nums,dp);
+        }
+
+        dp[idx] = Math.max(dp[idx-2]+nums[idx],dp[idx-1]);
+        return dp[idx];
+
+
+    }
+
+
+}
