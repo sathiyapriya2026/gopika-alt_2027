@@ -1,0 +1,160 @@
+import java.util.*;
+
+public class DataAnalysisImproved {
+
+    // ------------------- LOGIC METHODS -------------------
+
+    public static double mean(double[] data) {
+        double sum = 0;
+        for (double num : data) {
+            sum += num;
+        }
+        return sum / data.length;
+    }
+
+    public static double median(double[] data) {
+        double[] copy = data.clone();   // avoid modifying original
+        Arrays.sort(copy);
+
+        int n = copy.length;
+        if (n % 2 == 0) {
+            return (copy[n/2 - 1] + copy[n/2]) / 2.0;
+        } else {
+            return copy[n/2];
+        }
+    }
+
+    public static double max(double[] data) {
+        double max = data[0];
+        for (double num : data) {
+            if (num > max) {
+                max = num;
+            }
+        }
+        return max;
+    }
+
+    public static double min(double[] data) {
+        double min = data[0];
+        for (double num : data) {
+            if (num < min) {
+                min = num;
+            }
+        }
+        return min;
+    }
+
+    public static double stdDev(double[] data) {
+        double mean = mean(data);
+        double sum = 0;
+
+        for (double num : data) {
+            sum += Math.pow(num - mean, 2);
+        }
+
+        return Math.sqrt(sum / data.length);
+    }
+
+    // ------------------- INPUT VALIDATION -------------------
+
+    public static int getValidSize(Scanner sc) {
+        int n;
+        while (true) {
+            System.out.print("Enter number of data points (>0): ");
+            if (sc.hasNextInt()) {
+                n = sc.nextInt();
+                if (n > 0) {
+                    return n;
+                } else {
+                    System.out.println("❌ Size must be greater than 0");
+                }
+            } else {
+                System.out.println("❌ Invalid input. Enter an integer.");
+                sc.next(); // clear invalid input
+            }
+        }
+    }
+
+    public static double[] getValidData(Scanner sc, int n) {
+        double[] data = new double[n];
+
+        for (int i = 0; i < n; i++) {
+            while (true) {
+                System.out.print("Enter value " + (i + 1) + ": ");
+                if (sc.hasNextDouble()) {
+                    data[i] = sc.nextDouble();
+                    break;
+                } else {
+                    System.out.println("❌ Invalid number!");
+                    sc.next();
+                }
+            }
+        }
+        return data;
+    }
+
+    // ------------------- MENU DRIVEN PROGRAM -------------------
+
+    public static void displayMenu() {
+        System.out.println("\n===== DATA ANALYSIS MENU =====");
+        System.out.println("1. Mean");
+        System.out.println("2. Median");
+        System.out.println("3. Maximum");
+        System.out.println("4. Minimum");
+        System.out.println("5. Standard Deviation");
+        System.out.println("6. Exit");
+        System.out.print("Enter your choice: ");
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = getValidSize(sc);
+        double[] data = getValidData(sc, n);
+
+        int choice;
+
+        do {
+            displayMenu();
+
+            while (!sc.hasNextInt()) {
+                System.out.println("❌ Enter a valid choice!");
+                sc.next();
+            }
+
+            choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("Mean = " + mean(data));
+                    break;
+
+                case 2:
+                    System.out.println("Median = " + median(data));
+                    break;
+
+                case 3:
+                    System.out.println("Maximum = " + max(data));
+                    break;
+
+                case 4:
+                    System.out.println("Minimum = " + min(data));
+                    break;
+
+                case 5:
+                    System.out.println("Standard Deviation = " + stdDev(data));
+                    break;
+
+                case 6:
+                    System.out.println("Exiting program...");
+                    break;
+
+                default:
+                    System.out.println("❌ Invalid choice!");
+            }
+
+        } while (choice != 6);
+
+        sc.close();
+    }
+}
