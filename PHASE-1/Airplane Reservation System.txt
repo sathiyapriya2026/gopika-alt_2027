@@ -1,0 +1,331 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+// Passenger Class
+class Passenger {
+
+    private static int ticketCounter = 1001;
+
+    private String ticketId;
+    private String name;
+    private int age;
+    private String seatNumber;
+
+    // Constructor
+    public Passenger(String name, int age, String seatNumber) {
+        this.ticketId = "PNR" + ticketCounter++;
+        this.name = name;
+        this.age = age;
+        this.seatNumber = seatNumber;
+    }
+
+    // Getter Methods
+    public String getTicketId() {
+        return ticketId;
+    }
+
+    public String getSeatNumber() {
+        return seatNumber;
+    }
+
+    // Display Passenger Details
+    @Override
+    public String toString() {
+
+        return "Ticket ID      : " + ticketId +
+               "\nPassenger Name : " + name +
+               "\nAge            : " + age +
+               "\nSeat Number    : " + seatNumber;
+    }
+}
+
+// Flight Class
+class Flight {
+
+    private String flightNumber;
+    private String origin;
+    private String destination;
+    private int totalSeats;
+
+    private ArrayList<Passenger> passengers;
+    private ArrayList<String> availableSeats;
+
+    // Constructor
+    public Flight(String flightNumber,
+                  String origin,
+                  String destination,
+                  int totalSeats) {
+
+        this.flightNumber = flightNumber;
+        this.origin = origin;
+        this.destination = destination;
+        this.totalSeats = totalSeats;
+
+        passengers = new ArrayList<>();
+        availableSeats = new ArrayList<>();
+
+        // Generate Seats
+        for (int i = 1; i <= totalSeats; i++) {
+            availableSeats.add("Seat-" + i);
+        }
+    }
+
+    // Getter Method
+    public String getFlightNumber() {
+        return flightNumber;
+    }
+
+    // Display Flight Details
+    public void displayFlightInfo() {
+
+        System.out.println("-------------------------------------");
+        System.out.println("Flight Number : " + flightNumber);
+        System.out.println("Origin        : " + origin);
+        System.out.println("Destination   : " + destination);
+        System.out.println("Total Seats   : " + totalSeats);
+        System.out.println("Available     : " + availableSeats.size());
+        System.out.println("-------------------------------------");
+    }
+
+    // Book Ticket
+    public void bookTicket(String name, int age) {
+
+        if (availableSeats.isEmpty()) {
+
+            System.out.println("No seats available!");
+            return;
+        }
+
+        // Assign Seat
+        String seat = availableSeats.remove(0);
+
+        Passenger passenger = new Passenger(name, age, seat);
+
+        passengers.add(passenger);
+
+        System.out.println("\nTicket Booked Successfully!");
+        System.out.println("-------------------------------------");
+        System.out.println(passenger);
+        System.out.println("-------------------------------------");
+    }
+
+    // Cancel Ticket
+    public void cancelTicket(String ticketId) {
+
+        for (int i = 0; i < passengers.size(); i++) {
+
+            Passenger p = passengers.get(i);
+
+            if (p.getTicketId().equalsIgnoreCase(ticketId)) {
+
+                availableSeats.add(p.getSeatNumber());
+
+                passengers.remove(i);
+
+                System.out.println("Ticket Cancelled Successfully!");
+                return;
+            }
+        }
+
+        System.out.println("Ticket ID not found!");
+    }
+
+    // View All Passengers
+    public void viewPassengers() {
+
+        if (passengers.isEmpty()) {
+
+            System.out.println("No passengers booked.");
+            return;
+        }
+
+        System.out.println("\nPassengers List");
+        System.out.println("=====================================");
+
+        for (Passenger p : passengers) {
+
+            System.out.println(p);
+            System.out.println("-------------------------------------");
+        }
+    }
+}
+
+// Main Class
+public class AirlineReservationSystem {
+
+    static ArrayList<Flight> flights = new ArrayList<>();
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        // Add Flights
+        flights.add(new Flight("AI101", "Delhi", "London", 5));
+        flights.add(new Flight("AI202", "Mumbai", "Dubai", 3));
+        flights.add(new Flight("AI303", "Chennai", "Singapore", 4));
+
+        int choice;
+
+        do {
+
+            System.out.println("\n========== AIRLINE RESERVATION SYSTEM ==========");
+            System.out.println("1. View Flights");
+            System.out.println("2. Book Ticket");
+            System.out.println("3. Cancel Ticket");
+            System.out.println("4. View Passengers");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+
+            // Input Validation
+            while (!sc.hasNextInt()) {
+
+                System.out.print("Invalid input! Enter number only: ");
+                sc.next();
+            }
+
+            choice = sc.nextInt();
+            sc.nextLine();
+
+            switch (choice) {
+
+                case 1:
+                    viewFlights();
+                    break;
+
+                case 2:
+                    bookTicket(sc);
+                    break;
+
+                case 3:
+                    cancelTicket(sc);
+                    break;
+
+                case 4:
+                    viewPassengers(sc);
+                    break;
+
+                case 5:
+                    System.out.println("Thank you for using the system!");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice!");
+            }
+
+        } while (choice != 5);
+
+        sc.close();
+    }
+
+    // View Flights
+    public static void viewFlights() {
+
+        System.out.println("\nAVAILABLE FLIGHTS");
+
+        for (Flight f : flights) {
+
+            f.displayFlightInfo();
+        }
+    }
+
+    // Search Flight
+    public static Flight searchFlight(String flightNo) {
+
+        for (Flight f : flights) {
+
+            if (f.getFlightNumber().equalsIgnoreCase(flightNo)) {
+
+                return f;
+            }
+        }
+
+        return null;
+    }
+
+    // Book Ticket
+    public static void bookTicket(Scanner sc) {
+
+        viewFlights();
+
+        System.out.print("Enter Flight Number: ");
+        String flightNo = sc.nextLine();
+
+        Flight flight = searchFlight(flightNo);
+
+        if (flight == null) {
+
+            System.out.println("Flight not found!");
+            return;
+        }
+
+        System.out.print("Enter Passenger Name: ");
+        String name = sc.nextLine();
+
+        int age;
+
+        while (true) {
+
+            System.out.print("Enter Age: ");
+
+            if (sc.hasNextInt()) {
+
+                age = sc.nextInt();
+                sc.nextLine();
+
+                if (age > 0) {
+                    break;
+                } else {
+                    System.out.println("Age must be greater than 0!");
+                }
+
+            } else {
+
+                System.out.println("Invalid age!");
+                sc.next();
+            }
+        }
+
+        flight.bookTicket(name, age);
+    }
+
+    // Cancel Ticket
+    public static void cancelTicket(Scanner sc) {
+
+        viewFlights();
+
+        System.out.print("Enter Flight Number: ");
+        String flightNo = sc.nextLine();
+
+        Flight flight = searchFlight(flightNo);
+
+        if (flight == null) {
+
+            System.out.println("Flight not found!");
+            return;
+        }
+
+        System.out.print("Enter Ticket ID: ");
+        String ticketId = sc.nextLine();
+
+        flight.cancelTicket(ticketId);
+    }
+
+    // View Passengers
+    public static void viewPassengers(Scanner sc) {
+
+        viewFlights();
+
+        System.out.print("Enter Flight Number: ");
+        String flightNo = sc.nextLine();
+
+        Flight flight = searchFlight(flightNo);
+
+        if (flight == null) {
+
+            System.out.println("Flight not found!");
+            return;
+        }
+
+        flight.viewPassengers();
+    }
+}
